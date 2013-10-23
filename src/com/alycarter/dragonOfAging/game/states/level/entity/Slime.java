@@ -4,43 +4,38 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.geom.Point2D.Double;
 
-import com.alycarter.crabClawEngine.graphics.Animation;
-import com.alycarter.crabClawEngine.graphics.TextureTileLoader;
 import com.alycarter.dragonOfAging.game.Game;
 import com.alycarter.dragonOfAging.game.states.level.Level;
 
 public class Slime extends Entity {
 
-	private Sprite sprite = new Sprite();
+	private Sprite sprite;
 	private double zVelocity=0;
 	private boolean inAir=false;
 	private double jumpTimeout=1.5;
 	
-	public Slime(Game game, Level level, Double location) {
+	public Slime(Game game, final Level level, Double location) {
 		super(game, level, Entity.enemy, location, new Double(1,1), 0.7, 0,3);
-		
-		Animation ani;
-		ani= new Animation(game, "stand", tile, 1, 1);
-		sprite.addAnimation(ani);
-		ani = new Animation(game, "squish", tile, 2,1, 0.3){
+		sprite = new Sprite(game){
 			public void onAnimationEnd() {
-				zVelocity=1;
-				inAir=true;
-				sprite.setCurrentAnimation("leap");
-				setTravelDirection(getJumpDirection());
-				speed=1.5;
+				if(sprite.getCurrentAnimation()==level.animations.slimeSquish){
+					zVelocity=1;
+					inAir=true;
+					sprite.setCurrentAnimationByName("leap");
+					setTravelDirection(getJumpDirection());
+					speed=1.5;
+				}
+				if(sprite.getCurrentAnimation()==level.animations.slimeLand){
+					sprite.setCurrentAnimationByName("stand");
+				}
 			};
 		};
-		sprite.addAnimation(ani);
-		ani = new Animation(game, "leap", tile, 1,3, 1);
-		sprite.addAnimation(ani);
-		ani = new Animation(game, "land", tile, 2,4, 0.3){
-			public void onAnimationEnd() {
-				sprite.setCurrentAnimation("stand");
-			};
-		};
-		sprite.addAnimation(ani);
-		sprite.setCurrentAnimation("stand");
+		sprite.animaitons.add(level.animations.slimeStand);
+		sprite.animaitons.add(level.animations.slimeSquish);
+		sprite.animaitons.add(level.animations.slimeLeap);
+		sprite.animaitons.add(level.animations.slimeLand);
+		sprite.setCurrentAnimationByName("stand");
+		sprite.speedMultiplyer=5;
 		bloodColor= new Color(111,219,61);
 	}
 	
@@ -53,7 +48,8 @@ public class Slime extends Entity {
 			if(height<0){
 				height=0;
 				zVelocity=0;
-				sprite.setCurrentAnimation("land");
+				sprite.setCurrentAnimationByName("land");
+				sprite.restartAnimation();
 				inAir=false;
 				jumpTimeout=1+Math.random();
 				speed=0;
@@ -73,8 +69,9 @@ public class Slime extends Entity {
 		}else{
 			jumpTimeout-=game.getDeltaTime();
 		}
-		if(sprite.getCurrentAnimation().getName().equals("stand")&&jumpTimeout<0){
-			sprite.setCurrentAnimation("squish");
+		if(sprite.getAnimationName(sprite.getCurrentAnimationNumber()).equals("stand")&&jumpTimeout<0){
+			sprite.setCurrentAnimationByName("squish");
+			sprite.restartAnimation();
 		}
 		checkEntityCollisions();
 		
@@ -84,6 +81,7 @@ public class Slime extends Entity {
 	public void onCollide(Entity e) {
 		if(e.entityType.equals(Entity.player)){
 			e.damage(1);
+			e.knockBack(new Double(e.location.x-location.x, e.location.y-location.y), 1);
 		}
 	}
 	

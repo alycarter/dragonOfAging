@@ -17,6 +17,8 @@ public class Entity {
 	private Double lookDirection;
 	private Double travelDirection;
 	public double speed;
+	private double knockBackSpeed = 0;
+	private Double knockBackDirection = new Double(0, 0);
 	public String entityType;
 	public Game game;
 	public Level level;
@@ -66,6 +68,13 @@ public class Entity {
 		boolean collision = false;
 		location.x+=travelDirection.x*speed*game.getDeltaTime();
 		location.y+=travelDirection.y*speed*game.getDeltaTime();
+		location.x+=knockBackDirection.x*knockBackSpeed*game.getDeltaTime();
+		location.y+=knockBackDirection.y*knockBackSpeed*game.getDeltaTime();
+		if(knockBackSpeed> game.getDeltaTime()){
+			knockBackSpeed-=game.getDeltaTime();
+		}else{
+			knockBackSpeed=0;
+		}
 		if(checkHitmapCollision()==Level.obstructed){
 			collision=true;
 			location.x=priorLocation.x;
@@ -228,6 +237,11 @@ public class Entity {
 		}else{
 			return false;
 		}
+	}
+	
+	public void knockBack(Double direction, double speed){
+		knockBackDirection=angleAsVector(VectorAsAngle(direction));
+		knockBackSpeed=speed;
 	}
 	
 }

@@ -3,18 +3,19 @@ package com.alycarter.dragonOfAging.game.states.level.entity;
 import java.awt.Graphics;
 import java.awt.geom.Point2D.Double;
 
-import com.alycarter.crabClawEngine.graphics.Animation;
-import com.alycarter.crabClawEngine.graphics.TextureTileLoader;
 import com.alycarter.dragonOfAging.game.Game;
 import com.alycarter.dragonOfAging.game.states.level.Level;
 
 public class Coin extends Entity {
 
-	private Sprite sprite = new Sprite();
+	private Sprite sprite;
 	
 	public Coin(Game game, Level level, Double location) {
 		super(game, level, Entity.Coin, location, new Double(5d/12d, 5d/12d), 5d/12d,0, 1);
-		sprite.addAnimation(new Animation(game, "spin", t, 4, 0.5));
+		sprite = new Sprite(game);
+		sprite.animaitons.add(level.animations.coinSpin);
+		sprite.setAnimationByNumber(0);
+		sprite.speedMultiplyer=7;
 		
 	}
 	

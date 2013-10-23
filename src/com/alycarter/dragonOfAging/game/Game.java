@@ -17,9 +17,9 @@ public class Game extends com.alycarter.crabClawEngine.Game{
 		level =new TestLevel(this);
 		level.loadLevel();
 		stateMachine.push(level);
-		setFrameLimit(120);
+		setFrameLimit(1000);
 	}
-
+	
 	@Override
 	public void onRender(Graphics arg0) {
 		// TODO Auto-generated method stub

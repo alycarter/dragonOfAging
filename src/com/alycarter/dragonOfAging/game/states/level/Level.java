@@ -15,8 +15,10 @@ import com.alycarter.crabClawEngine.graphics.TextureTileLoader;
 import com.alycarter.crabClawEngine.state.State;
 import com.alycarter.dragonOfAging.game.Game;
 import com.alycarter.dragonOfAging.game.states.level.entity.Entity;
-import com.alycarter.dragonOfAging.game.states.level.entity.Player;
 import com.alycarter.dragonOfAging.game.states.level.entity.Slime;
+import com.alycarter.dragonOfAging.game.states.level.entity.player.Player;
+import com.alycarter.dragonOfAging.game.states.level.graphics.Animations;
+import com.alycarter.dragonOfAging.game.states.level.graphics.Textures;
 
 public class Level implements State {
 	
@@ -25,7 +27,6 @@ public class Level implements State {
 	public ArrayList<Entity> entities;
 	public ArrayList<Entity> particles;
 	public Player player;
-	public static PlayerStats playerStats;
 	public boolean loaded = false;
 	protected Game game;
 	public double unitResolution;
@@ -226,15 +227,12 @@ public class Level implements State {
 		openNodes=new ArrayList<Level.Node>();
 		generateLevel();
 		player =new Player(game, this, new Double(spawnPoint.x+0.5, spawnPoint.y+0.5));
-		if(playerStats==null){
-			playerStats = new PlayerStats();
-		}
 		entities.add(player);
 		for(int x=0;x<mapSize.x;x++){
 			for(int y=0;y<mapSize.y;y++){
 				if(getMovable(x, y)==clear){
 					if(Math.random()*10<0.5){
-						//entities.add(new Slime(game,this,new Double(x+0.5, y+0.5)));
+//						entities.add(new Slime(game,this,new Double(x+0.5, y+0.5)));
 					}
 				}
 			}
@@ -274,12 +272,9 @@ public class Level implements State {
 			}
 		       
 			g.drawImage(foreGround, getRenderOffSet().x, getRenderOffSet().y, null);
-			try {
-				BufferedImage img = ImageIO.read(Level.class.getResourceAsStream("/heart.png"));
-				for(int i=1;i<=player.health;i++){
-					g.drawImage(img, 10+(55*i), 10, 50, 50, null);
-				}
-			} catch (IOException e) {e.printStackTrace();}
+			for(int i=1;i<=player.health;i++){
+				g.drawImage(textures.health.getTile(0), 12*i, 10, 12, 30, null);
+			}
 			g.setColor(Color.BLACK);
 			g.drawString("rendered: "+sorted.size()+" entites: "+entities.size()+" particles: "+particles.size(), 10, 65);
 			if(gameOver){
